@@ -1,0 +1,64 @@
+# ========================
+# OS
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Local-only files (CLAUDE.md)
+# ========================
+AGENTS.md
+CLAUDE.md
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ========================
+# Virtual environments
+# ========================
+venv/
+.venv/
+env/
+.env
+
+# ========================
+# IDE / Editor
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# Experiment outputs
+# ========================
+results/
+checkpoints/
+*.ckpt
+*.pth
+*.pt
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# Jupyter
+# ========================
+.ipynb_checkpoints/
+
+# ========================
+# Visualization outputs
+# ========================
+visualization/
