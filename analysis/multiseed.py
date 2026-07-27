@@ -10,8 +10,6 @@ from summarize_results import MODEL_RUNS, PRED_LENS, DATASETS, collect_results, 
 SEEDS = (2021, 2022, 2023)
 MULTISEED_RUNS = {
     "POEM": MODEL_RUNS["POEM"],
-    "PhaseFormer": MODEL_RUNS["PhaseFormer"],
-    "TimeBase": MODEL_RUNS["TimeBase"],
 }
 EXPECTED_KEYS = {
     (dataset, pred_len)

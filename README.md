@@ -47,22 +47,11 @@ To train and evaluate the current POEM model on a given dataset:
 bash ./scripts/POEM/etth1.sh
 ```
 
-To reproduce PhaseFormer with its original hyperparameters and this repository's
-seed, use the matching script:
-
-```bash
-bash ./scripts/PhaseFormer/etth1.sh
-```
-
-The complete seven-dataset suites are available through:
+The complete seven-dataset suite is available through:
 
 ```bash
 bash ./scripts/POEM/run_all.sh
-bash ./scripts/PhaseFormer/run_all.sh
 ```
-
-Scripts, checkpoints, logs, and results are separated into `POEM/` and
-`PhaseFormer/` families under their respective top-level directories.
 
 ------
 

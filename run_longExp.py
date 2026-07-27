@@ -21,7 +21,7 @@ parser.add_argument('--is_training', type=int, required=True, default=1, help='s
 parser.add_argument('--model_id', type=str, required=True, default='test', help='model id')
 parser.add_argument(
     '--model', type=str,
-    choices=['POEM', 'PhaseFormer', 'TimeBase', 'SparseTSF'],
+    choices=['POEM'],
     default='POEM', help='model',
 )
 parser.add_argument('--output_family', type=str, default='', help='top-level output directory name')
@@ -41,15 +41,6 @@ parser.add_argument('--pred_len', type=int, default=96, help='prediction sequenc
 
 # model
 parser.add_argument('--period_len', type=int, default=24, help='period length')
-parser.add_argument('--basis_num', type=int, default=6, help='TimeBase basis count')
-parser.add_argument('--use_period_norm', type=int, default=1, help='TimeBase period normalization toggle')
-parser.add_argument('--use_orthogonal', type=int, default=1, help='TimeBase orthogonal loss toggle')
-parser.add_argument('--orthogonal_weight', type=float, default=0.2, help='TimeBase orthogonal loss weight')
-parser.add_argument('--individual', type=int, default=0, help='TimeBase channel-independent projection toggle')
-parser.add_argument(
-    '--model_type', choices=['linear', 'mlp'], default='mlp',
-    help='SparseTSF forecasting head',
-)
 parser.add_argument('--mixer_layers', type=int, default=1, help='POEM Mixer block count')
 parser.add_argument('--mixer_dropout', type=float, default=0.0, help='Mixer dropout')
 parser.add_argument('--revin', type=int, default=1, help='RevIN; True 1 False 0')
@@ -78,22 +69,6 @@ parser.add_argument(
     '--use_global_forecast', type=int, choices=[0, 1], default=1,
     help='enable the direct global forecast branch',
 )
-parser.add_argument('--latent_dim', type=int, default=8, help='PhaseFormer latent dimension')
-parser.add_argument('--phase_encoder_hidden', type=int, default=32, help='PhaseFormer encoder hidden size')
-parser.add_argument('--predictor_hidden', type=int, default=64, help='PhaseFormer predictor hidden size')
-parser.add_argument('--phase_layers', type=int, default=1, help='PhaseFormer routing layer count')
-parser.add_argument('--phase_attn_heads', type=int, default=4, help='PhaseFormer attention head count')
-parser.add_argument('--phase_attn_dropout', type=float, default=0.1, help='PhaseFormer attention dropout')
-parser.add_argument('--phase_attn_use_relpos', type=int, default=1, help='PhaseFormer relative position toggle')
-parser.add_argument('--phase_attn_window', type=int, default=None, help='PhaseFormer attention window')
-parser.add_argument('--phase_attention_dim', type=int, default=None, help='PhaseFormer attention dimension')
-parser.add_argument('--phase_num_routers', type=int, default=8, help='PhaseFormer router count')
-parser.add_argument('--phase_use_pos_embed', type=int, default=1, help='PhaseFormer position embedding toggle')
-parser.add_argument('--phase_pos_dropout', type=float, default=0.0, help='PhaseFormer position dropout')
-parser.add_argument('--use_revin', type=int, default=1, help='PhaseFormer RevIN toggle')
-parser.add_argument('--revin_affine', type=int, default=0, help='PhaseFormer RevIN affine toggle')
-parser.add_argument('--revin_eps', type=float, default=1e-5, help='PhaseFormer RevIN epsilon')
-
 # optimization
 parser.add_argument('--train_epochs', type=int, default=100, help='train epochs')
 parser.add_argument('--batch_size', type=int, default=128, help='batch size of train input data')
@@ -105,11 +80,8 @@ parser.add_argument('--seed', type=int, default=2021, help='random seed')
 parser.add_argument('--run_tag', type=str, default='', help='experiment variant tag')
 parser.add_argument('--optimizer', type=str, choices=['adam', 'adamw'], default='adamw', help='optimizer')
 parser.add_argument('--huber_delta', type=float, default=1.0, help='Huber loss delta')
-parser.add_argument('--pct_start', type=float, default=0.3, help='OneCycleLR warmup fraction')
 parser.add_argument('--drop_last_train', type=int, default=0, help='drop incomplete training batch')
 parser.add_argument('--num_workers', type=int, default=0, help='data loader workers')
-parser.add_argument('--scheduler_mode', type=str, choices=['poem', 'phaseformer', 'timebase', 'sparsetsf'], default='poem',
-                    help='model-specific learning-rate behavior')
 parser.add_argument('--test_last', type=int, default=0, help='test final epoch weights instead of best checkpoint')
 parser.add_argument('--sanity_val_steps', type=int, default=0, help='validation batches before epoch one')
 parser.add_argument('--eval_test_each_epoch', type=int, default=0, help='run the test loader after each epoch')

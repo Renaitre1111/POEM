@@ -1,6 +1,6 @@
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import POEM, PhaseFormer, SparseTSF, TimeBase
+from models import POEM
 from utils.metrics import metric
 from utils.tools import EarlyStopping, adjust_learning_rate
 
@@ -13,7 +13,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch import optim
-from torch.optim import lr_scheduler
 
 warnings.filterwarnings('ignore')
 
@@ -43,13 +42,7 @@ class Exp_Main(Exp_Basic):
         return os.path.join(path, setting)
 
     def _build_model(self):
-        model_module = {
-            'POEM': POEM,
-            'PhaseFormer': PhaseFormer,
-            'TimeBase': TimeBase,
-            'SparseTSF': SparseTSF,
-        }[self.args.model]
-        model = model_module.Model(self.args).float()
+        model = POEM.Model(self.args).float()
         print(sum(p.numel() for p in model.parameters()))
         return model
 
@@ -83,16 +76,10 @@ class Exp_Main(Exp_Basic):
         batch_y = batch_y.to(self.device, non_blocking=True)
         return batch_x, batch_y
 
-    def _forward_batch(self, batch_x, return_aux=False):
+    def _forward_batch(self, batch_x):
         f_dim = -1 if self.args.features == 'MS' else 0
         outputs = self.model(batch_x)
-        auxiliary_loss = None
-        if isinstance(outputs, tuple):
-            outputs, second_output = outputs
-            auxiliary_loss = second_output
         outputs = outputs[:, -self.args.pred_len:, f_dim:]
-        if return_aux:
-            return outputs, auxiliary_loss
         return outputs
 
     def vali(self, vali_loader, criterion):
@@ -143,17 +130,6 @@ class Exp_Main(Exp_Basic):
         early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
         model_optim = self._select_optimizer()
         criterion = self._select_criterion()
-        if self.args.scheduler_mode in {'timebase', 'sparsetsf'}:
-            # The upstream constructor sets the first-epoch LR to max_lr / 25,
-            # even when its type3 schedule does not call scheduler.step().
-            lr_scheduler.OneCycleLR(
-                optimizer=model_optim,
-                steps_per_epoch=train_steps,
-                pct_start=self.args.pct_start,
-                epochs=self.args.train_epochs,
-                max_lr=self.args.learning_rate,
-            )
-
         if self.args.sanity_val_steps > 0:
             self.model.eval()
             with torch.inference_mode():
@@ -174,14 +150,11 @@ class Exp_Main(Exp_Basic):
                 iter_count += 1
                 model_optim.zero_grad(set_to_none=True)
                 batch_x, batch_y = self._prepare_batch(batch_x, batch_y)
-                outputs, auxiliary_loss = self._forward_batch(batch_x, return_aux=True)
+                outputs = self._forward_batch(batch_x)
                 loss = criterion(outputs, batch_y)
                 train_loss += loss.detach()
 
-                back_loss = loss
-                if auxiliary_loss is not None and self.args.use_orthogonal:
-                    back_loss = back_loss + self.args.orthogonal_weight * auxiliary_loss
-                back_loss.backward()
+                loss.backward()
                 self._clip_gradients()
                 model_optim.step()
 
@@ -208,8 +181,7 @@ class Exp_Main(Exp_Basic):
             if early_stopping.early_stop:
                 print('Early stopping')
                 break
-            if self.args.scheduler_mode in {'poem', 'timebase', 'sparsetsf'}:
-                adjust_learning_rate(model_optim, epoch + 1, self.args)
+            adjust_learning_rate(model_optim, epoch + 1, self.args)
 
         best_model_path = os.path.join(path, 'checkpoint.pth')
         if not self.args.test_last:
@@ -260,12 +232,6 @@ class Exp_Main(Exp_Basic):
             'pred_len': self.args.pred_len,
             'enc_in': self.args.enc_in,
             'period_len': self.args.period_len,
-            'basis_num': self.args.basis_num,
-            'use_period_norm': self.args.use_period_norm,
-            'use_orthogonal': self.args.use_orthogonal,
-            'orthogonal_weight': self.args.orthogonal_weight,
-            'individual': self.args.individual,
-            'model_type': self.args.model_type,
             'mixer_layers': self.args.mixer_layers,
             'mixer_dropout': self.args.mixer_dropout,
             'd_model': self.args.d_model,
@@ -276,21 +242,6 @@ class Exp_Main(Exp_Basic):
             'use_harmonic_modulation': self.args.use_harmonic_modulation,
             'use_vanilla_mixer': self.args.use_vanilla_mixer,
             'use_global_forecast': self.args.use_global_forecast,
-            'latent_dim': self.args.latent_dim,
-            'phase_encoder_hidden': self.args.phase_encoder_hidden,
-            'predictor_hidden': self.args.predictor_hidden,
-            'phase_layers': self.args.phase_layers,
-            'phase_attn_heads': self.args.phase_attn_heads,
-            'phase_attn_dropout': self.args.phase_attn_dropout,
-            'phase_attn_use_relpos': self.args.phase_attn_use_relpos,
-            'phase_attn_window': self.args.phase_attn_window,
-            'phase_attention_dim': self.args.phase_attention_dim,
-            'phase_num_routers': self.args.phase_num_routers,
-            'phase_use_pos_embed': self.args.phase_use_pos_embed,
-            'phase_pos_dropout': self.args.phase_pos_dropout,
-            'use_revin': self.args.use_revin,
-            'revin_affine': self.args.revin_affine,
-            'revin_eps': self.args.revin_eps,
             'revin': self.args.revin,
             'affine': self.args.affine,
             'learning_rate': self.args.learning_rate,
@@ -298,10 +249,8 @@ class Exp_Main(Exp_Basic):
             'gradient_clip': self.args.gradient_clip,
             'loss': self.args.loss,
             'huber_delta': self.args.huber_delta,
-            'pct_start': self.args.pct_start,
             'optimizer': self.args.optimizer,
             'lradj': self.args.lradj,
-            'scheduler_mode': self.args.scheduler_mode,
             'drop_last_train': self.args.drop_last_train,
             'num_workers': self.args.num_workers,
             'test_last': self.args.test_last,

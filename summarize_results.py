@@ -1,9 +1,9 @@
-"""Summarize POEM results with model comparison.
+"""Summarize POEM results.
 
 Reads settings and metrics recursively from results/.
 
 Generates:
-  results/comparison.csv     side-by-side comparison (oldest on left, newest on right)
+  results/comparison.csv
 """
 
 import csv
@@ -29,16 +29,6 @@ MODEL_RUNS = {
         "POEM",
         "POEM",
         "poem",
-    ),
-    "PhaseFormer": (
-        "PhaseFormer",
-        "PhaseFormer",
-        "phaseformer_original",
-    ),
-    "TimeBase": (
-        "TimeBase",
-        "TimeBase",
-        "timebase_original",
     ),
 }
 
