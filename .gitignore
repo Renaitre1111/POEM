@@ -62,3 +62,12 @@ logs/
 # Visualization outputs
 # ========================
 visualization/
+
+# ========================
+# Analysis scripts (ablation, sensitivity, etc.)
+# ========================
+analysis/
+scripts/run_multiseed.sh
+scripts/POEM/ablation/
+scripts/POEM/sensitivity/
+scripts/POEM/period_sensitivity/

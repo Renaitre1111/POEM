@@ -1,82 +1,30 @@
 # POEM: Phase Geometry Modeling with Harmonic Modulation
 
 Official implementation of **POEM** for long-term time series forecasting.
-POEM models periodic dynamics in a phase-aligned geometry using adaptive phase
-interaction and harmonic phase modulation.
 
-------
+## Datasets
 
-## 📦 Overview
-
- This repository includes:
-
-- 🔧 Scripts for training and evaluation
-- 📊 Preprocessed datasets and download links
-- 📝 Detailed instructions for reproducibility
-
-------
-
-## 📁 Dataset Preparation
-
-**Benchmark datasets**
-
-The paper evaluates POEM on seven public datasets:
+Download the benchmark datasets and unzip to `./dataset/`:
 
 ```
-ETTh1, ETTh2, ETTm1, ETTm2, Weather, Electricity, Traffic
+dataset/
+  ETTh1.csv   ETTh2.csv   ETTm1.csv   ETTm2.csv
+  weather.csv  electricity.csv  traffic.csv
 ```
 
-📥 Download from [Google Drive](https://drive.google.com/file/d/1ypgCc6iQ2Z8IB_9CY3If_KMRNQKBsI3J/view?usp=sharing), then unzip to the `./dataset/` directory.
+## Quick Start
 
-## ⚙️ Implementation Details
-
-- **Phase geometry construction** folds each variable into phase-aligned cycles.
-- **Adaptive phase interaction** combines local circular differences with
-  low-rank global phase interaction.
-- **Harmonic phase modulation** adapts features through learned harmonic bases.
-- **Geometry-guided forecast reconstruction** maps the phase representation
-  back to the requested prediction horizon.
-
-------
-
-## 🚀 Running Experiments
-
-To train and evaluate the current POEM model on a given dataset:
+Train and evaluate POEM on a single dataset:
 
 ```bash
-bash ./scripts/POEM/etth1.sh
+bash scripts/POEM/etth1.sh
 ```
 
-The complete seven-dataset suite is available through:
+Available scripts: `etth1.sh`, `etth2.sh`, `ettm1.sh`, `ettm2.sh`, `weather.sh`, `electricity.sh`, `traffic.sh`.
+
+Summarize results into a comparison table:
 
 ```bash
-bash ./scripts/POEM/run_all.sh
+python summarize_results.py
 ```
 
-------
-
-## 📄 Citation
-
-If you find this project helpful, please cite us:
-
-```bibtex
-@inproceedings{poem,
-  title={POEM: Phase Geometry Modeling with Harmonic Modulation for Long-term Time Series Forecasting},
-  author={Anonymous},
-  year={2026}
-}
-```
-
-
-
-------
-
-## Acknowledgements
-
-We would like to thank the authors of the following open-source projects for their valuable contributions, which provides significant help for our work:
-
-- [**SparseTSF** (ICML 2024)](https://github.com/lss-1138/SparseTSF)
-- [**TFB** (VLDB 2024)](https://github.com/decisionintelligence/TFB)
-- [**Time-Series-Library** (THUML)](https://github.com/thuml/Time-Series-Library)
-
-We gratefully acknowledge their contributions to the time series forecasting community.
